@@ -1,9 +1,9 @@
 import React from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import { Alert, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export function Home({ navigation }) {
+export function HomeUi({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.heading}>MY NOTES APP</Text>
@@ -23,7 +23,8 @@ export function Home({ navigation }) {
           }}
         >
           <Text style={styles.buttonText}>View Notes</Text>
-        </TouchableOpacity>
+              </TouchableOpacity>
+              
       </View>
     </SafeAreaView>
   );
@@ -31,6 +32,8 @@ export function Home({ navigation }) {
 
 async function checkUser() {
     const user = await AsyncStorage.getItem('user');
+    var userJsonObject = JSON.parse(user);
+    Alert.alert('Message', 'Hello ' + userJsonObject.id);
     return user;
 }
   
@@ -70,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default HomeUi;

@@ -1,5 +1,8 @@
-import{Login} from './Login';
-import{Home} from './Home';
+import {RegisterUi} from './Register';
+import {LoginUi} from './Login';
+import {HomeUi} from './Home';
+import {NewNoteUi} from './Newnote';
+import {ViewNoteUi} from './ViewNote';
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -15,8 +18,11 @@ function App(){
   const ui = (
     <NavigationContainer>
       <Stack.Navigator initialRouteName={checkUser !=null?"Login":"Home"}>
-        <Stack.Screen name="Login" component={Login}/>
-        <Stack.Screen name="Home" component={Home}/>
+      <Stack.Screen name='Login' component={LoginUi}/>
+          <Stack.Screen name='Register' component={RegisterUi}/>          
+          <Stack.Screen name='Home' component={HomeUi}/>
+          <Stack.Screen name='Newnote' component={NewNoteUi}/>
+          <Stack.Screen name='ViewNote' component={ViewNoteUi}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

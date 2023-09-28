@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -7,58 +7,61 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Alert,
 } from "react-native";
-
-const notesData = [
-  {
-    id: "1",
-    title: "Note Study",
-    description: "This is the first note.",
-    date: "2023-09-10 10:00 AM",
-    image: require("./assets/study.png"),
-  },
-  {
-    id: "2",
-    title: "Note Personal",
-    description: "This is the second note.",
-    date: "2023-08-23 02:30 PM",
-    image: require("./assets/personal.png"), 
-  },
-  {
-    id: "3",
-    title: "Note Travel",
-    description: "This is the first note.",
-    date: "2023-08-22 10:00 AM",
-    image: require("./assets/travel.png"),
-  },
-  {
-    id: "4",
-    title: "Note Work",
-    description: "This is the first note.",
-    date: "2023-07-22 10:00 AM",
-    image: require("./assets/work.png"),
-  },
- 
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export function ViewNoteUi({ navigation }) {
+  const [notesData, setNotesData] = useState([]);
+  useEffect(async () => {
+    const user = await AsyncStorage.getItem('user');
+    var userJsonObject = JSON.parse(user);
+    const userDetails = {
+      user_id: userJsonObject.id,
+    };
+    fetch("http://192.168.8.130/NoteTake/viewNote.php", {
+      method: "POST",
+      body: JSON.stringify(userDetails),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        // Alert.alert('Message', 'Hello ' + data);
+        // Set the fetched data in your component's state
+        setNotesData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []); // Empty dependency array to ensure the effect runs only once
 
-  const renderNoteItem = ({ item }) => {
+    const renderNoteItem = ({ item }) => {
+    let noteImageSource = null;
+
+    // Determine the image source based on the noteType
+    if (item.category_id == "study") {
+      noteImageSource = require("./assets/study.png");
+    } else if (item.category_id == "personal") {
+      noteImageSource = require("./assets/personal.png");
+    } else if (item.category_id == "travel") {
+      noteImageSource = require("./assets/travel.png");
+    } else if (item.category_id == "work") {
+      noteImageSource = require("./assets/work.png");
+    }
     return (
       <TouchableOpacity
         style={styles.noteCard}
         onPress={() => {
-        
+          // Handle the onPress action here
         }}
       >
-         <Image source={item.image} style={styles.noteImage} />
-      <View style={styles.noteTextContainer}>
-        <Text style={styles.noteTitle}>{item.title}</Text>
-        <Text style={styles.noteDescription}>{item.description}</Text>
-      </View>
-      <View style={styles.dateView}>
-        <Text style={styles.dateText}>{item.date}</Text>
-      </View>
+        <Image source={noteImageSource} style={styles.noteImage} />
+        <View style={styles.noteTextContainer}>
+          <Text style={styles.noteTitle}>{item.title}</Text>
+          <Text style={styles.noteDescription}>{item.description}</Text>
+        </View>
+        <View style={styles.dateView}>
+          <Text style={styles.dateText}>{item.created_at}</Text>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -67,12 +70,13 @@ export function ViewNoteUi({ navigation }) {
     <SafeAreaView style={styles.container}>
       <FlatList
         data={notesData}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()} // Ensure id is a string or unique identifier
         renderItem={renderNoteItem}
       />
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -129,6 +133,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-
-export default ViewNoteUi;

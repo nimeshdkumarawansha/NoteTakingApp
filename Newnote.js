@@ -9,12 +9,14 @@ import {
   View,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export function NewNoteUi({ navigation }) {
+export  function NewNoteUi({ navigation }) {
+  
   const [getTitle, setTitle] = useState("");
   const [getDescription, setDescription] = useState("");
   const [getCategory, setCategory] = useState("");
-
+  
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(null);
   const [items, setItems] = useState([
@@ -23,9 +25,12 @@ export function NewNoteUi({ navigation }) {
     { label: "Personal", value: "personal" },
     { label: "Work", value: "work" },
   ]);
-
-  function SaveNote() {
+  
+  async function SaveNote() {
+    const user = await AsyncStorage.getItem('user');
+    var userJsonObject = JSON.parse(user);
     const noteDetails = {
+      user_id: userJsonObject.id,
       title: getTitle,
       description: getDescription,
       category: getCategory,
